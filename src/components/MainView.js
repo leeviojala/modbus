@@ -10,6 +10,7 @@ import {
   Typography,
   Toolbar,
   CircularProgress,
+  Grow,
 } from "@material-ui/core";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
@@ -78,12 +79,12 @@ export default function MainView(props, showBelow) {
   return (
     <React.Fragment>
       <Container style={{ maxHeight: "95vh" }}>
-        {show && (
+        <Grow in={show}>
           <Fab variant="extended" className={classes.fab} onClick={scrollTop}>
             <NavigationIcon />
             Takaisin ylös
           </Fab>
-        )}
+        </Grow>
 
         <CssBaseline />
         <AppBar>
