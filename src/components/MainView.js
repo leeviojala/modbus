@@ -14,13 +14,12 @@ import {
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import NavigationIcon from "@material-ui/icons/Navigation";
-import { Skeleton } from "@material-ui/lab";
 
 const useStyles = makeStyles((theme) => ({
   fab: {
     margin: theme.spacing(1),
     position: "fixed",
-    bottom: theme.spacing(6),
+    bottom: theme.spacing(2),
     right: theme.spacing(1),
     zIndex: 1000,
   },
@@ -29,14 +28,27 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function MainView(props) {
+export default function MainView(props, showBelow) {
   const classes = useStyles();
   const proxyurl = "https://cors-anywhere.herokuapp.com/";
   const [valueList, setValueList] = useState(null);
   const [header, setHeader] = useState("");
+  const [show, setShow] = useState(false);
+
+  const handleScroll = () => {
+    if (window.pageYOffset > 0) {
+      if (!show) setShow(true);
+    } else {
+      if (show) setShow(false);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener(`scroll`, handleScroll);
+    return () => window.removeEventListener(`scroll`, handleScroll);
+  });
 
   const scrollTop = () => {
-    console.log("kutsuttiin");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -52,11 +64,9 @@ export default function MainView(props) {
         },
       })
       .then((response) => {
-        console.log(response);
         let splitted = response.data;
         splitted = splitted.split(/\r\n|\r|\n/);
         let sorted = splitted;
-        console.log(splitted);
         const rDate = new Date(sorted[0]);
         const fDate = rDate.toLocaleString();
         setHeader(fDate);
@@ -68,10 +78,13 @@ export default function MainView(props) {
   return (
     <React.Fragment>
       <Container style={{ maxHeight: "95vh" }}>
-        <Fab variant="extended" className={classes.fab} onClick={scrollTop}>
-          <NavigationIcon />
-          Takaisin ylös
-        </Fab>
+        {show && (
+          <Fab variant="extended" className={classes.fab} onClick={scrollTop}>
+            <NavigationIcon />
+            Takaisin ylös
+          </Fab>
+        )}
+
         <CssBaseline />
         <AppBar>
           <Toolbar>
@@ -91,14 +104,8 @@ export default function MainView(props) {
           ) : (
             <React.Fragment>
               <CircularProgress></CircularProgress>
-              <Skeleton
-                animation="wave"
-                variant="rect"
-                className={classes.media}
-              />
             </React.Fragment>
           )}
-          {console.log(valueList)}
         </List>
       </Container>
     </React.Fragment>
